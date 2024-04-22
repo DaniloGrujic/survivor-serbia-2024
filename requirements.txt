@@ -1,1 +1,2 @@
 streamlit-extras==0.4.2
+streamlit-lottie==0.0.5
