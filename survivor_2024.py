@@ -9,7 +9,6 @@ import plotly.graph_objects as go
 
 
 highest_num_of_games = 0
-highest_num_of_weekly_games = []
 highest_num_of_votes = 0
 max_weeks = 0
 
@@ -190,7 +189,8 @@ class TribeCard:
 			width=600,
 			height=280,
 			margin=dict(l=50, r=50, b=10, t=30, pad=4),
-			legend={'traceorder': 'normal'})
+			legend={'traceorder': 'normal'},
+			hoverlabel=dict(bgcolor='#262730'))
 
 		# chart 2 (wins)
 		hex_colors = {
@@ -213,14 +213,17 @@ class TribeCard:
 			width=500,
 			height=270,
 			margin=dict(l=50, r=50, b=10, t=15, pad=4),
-			template='plotly_dark')
+			template='plotly_dark',
+			hoverlabel=dict(bgcolor='#262730'))
 
 		# chart 3 (speed)
 		speed = tribe_stat['weekly_speed']
 
 		fig3 = go.Figure()
 		for index, category in enumerate(speed.index):
-			hover_text = [f"{player}<br>Nedelja: {category}<br>Brzina: {int(value)}<extra></extra>" for player, value in zip(speed.columns[0:], speed.loc[category])]
+			hover_text = [
+				f"{player}<br>Nedelja: {category}<br>Brzina: {int(value)}<extra></extra>"
+				for player, value in zip(speed.columns[0:], speed.loc[category])]
 			fig3.add_trace(
 				go.Bar(
 					x=speed.columns[0:],
@@ -235,7 +238,8 @@ class TribeCard:
 			height=280,
 			margin=dict(l=0, r=0, b=0, t=15, pad=4),
 			legend_title="Nedelja",
-			template='plotly_dark')
+			template='plotly_dark',
+			hoverlabel=dict(bgcolor='#262730'))
 
 		# chart 4 (accuracy)
 		bar_plot_data = tribe[['Ime', 'Preciznost']].sort_values(by='Preciznost', ascending=False)
@@ -245,12 +249,16 @@ class TribeCard:
 			textangle=0,
 			textposition="outside",
 			cliponaxis=False,
-			marker_color="#add8e6" if tribe_color == "Plavo" else '#ff8e8e')
+			marker_color="#add8e6" if tribe_color == "Plavo" else '#ff8e8e',
+			hovertemplate=[
+				f'{row["Ime"]}<br>Preciznost: {row["Preciznost"]}<extra></extra>'
+				for index, row in bar_plot_data.iterrows()])
 		fig4.update_layout(
 			autosize=False,
 			width=600,
 			height=280,
-			margin=dict(l=50, r=50, b=0, t=15, pad=4))
+			margin=dict(l=50, r=50, b=0, t=15, pad=4),
+			hoverlabel=dict(bgcolor='#262730'))
 
 		for tab in tab1, tab2, tab3, tab4:
 			with tab:
@@ -327,7 +335,7 @@ class PlayerCard:
 			help='Protivnik protiv kojeg takmičar ima najviše poraza')
 
 		with self.parent:
-			add_vertical_space(2)
+			add_vertical_space(1)
 
 		col7, col8, col9 = self.parent.columns([0.3, 0.3, 0.5])
 
@@ -364,7 +372,9 @@ class PlayerCard:
 			width=350,
 			range_r=[0, 10],
 			color_discrete_sequence=["#4169E1" if player_data['tribe_id'] == 2 else "#D22B2B"])
-		fig1.update_traces(fill='toself',  hovertemplate='%{r:.2f}<extra></extra>', mode='markers+lines')
+
+		fig1.update_traces(fill='toself',  hovertemplate='%{theta}: %{r:.2f}<extra></extra>', mode='markers+lines')
+
 		fig1.update_polars(
 			bgcolor="#262730",
 			angularaxis_showgrid=False,
@@ -372,6 +382,7 @@ class PlayerCard:
 			radialaxis_tickmode='array',
 			gridshape='linear',
 			radialaxis_showticklabels=False)
+
 		fig1.update_layout(
 			height=280,
 			margin=dict(b=10),
@@ -379,9 +390,10 @@ class PlayerCard:
 				radialaxis=dict(
 					visible=True,
 					range=[0, 10])),
-			showlegend=False
-		)
-		fig1.for_each_trace(lambda t: t.update(hoveron='points'))
+			showlegend=False,
+			hoverlabel=dict(bgcolor='#262730'))
+
+		# fig1.for_each_trace(lambda t: t.update(hoveron='points'))
 		col8.plotly_chart(fig1, config={'displayModeBar': False})
 
 		weekly_results['Preciznost'] = weekly_results['Preciznost'].apply(lambda acc_str: float(acc_str[:-1]) / 10)
@@ -414,9 +426,10 @@ class PlayerCard:
 			margin=dict(l=50, r=50, b=10, t=0, pad=4),
 			template='plotly_dark',
 			xaxis=dict(title_text="Nedelje", tickmode='array', tickvals=weeks, range=[0.5, max(weeks) + 0.5]),
-			yaxis=dict(range=[0, 10]))
+			yaxis=dict(range=[0, 10]),
+			hoverlabel=dict(bgcolor='#262730'))
 
-		col9.plotly_chart(fig2, config = {'displayModeBar': False})
+		col9.plotly_chart(fig2, config={'displayModeBar': False})
 		self.parent.markdown("""---""")
 
 
@@ -434,7 +447,6 @@ class Data:
 		self.tribes_data['Preciznost'] = 0
 
 	def get_player_data(self, player_name, player_tribe):
-		global highest_num_of_weekly_games
 		player_info = self.tribes_data[self.tribes_data['Ime'] == player_name]
 		player_games = self.games_data[self.games_data[player_tribe] == player_name]
 
@@ -483,21 +495,6 @@ class Data:
 		weekly_results.columns = ['Nedelja', 'Borbe', 'Pobede', 'Brzina', 'Preciznost']
 		weekly_results.fillna(0, inplace=True)
 
-		weekly_results_chart = weekly_results.copy()
-		weekly_results_chart = weekly_results_chart.reset_index()
-		# standardizing wins
-		weekly_results_chart['Pobede'] = weekly_results_chart['Pobede'] / weekly_results_chart['Borbe'] * 10
-		# standardizing games
-		standardized_games = []
-		for index, column in weekly_results_chart.iterrows():
-			week = column.iloc[1]
-			games_standardized_value = weekly_results_chart.iloc[index, 2] / highest_num_of_weekly_games[week - 1] * 10
-			standardized_games.append(games_standardized_value.round(2))
-		weekly_results_chart['Borbe'] = standardized_games
-		weekly_results_chart = weekly_results_chart.drop(columns=['index'])
-		# cleaning accuracy values
-		weekly_results_chart['Preciznost'] = weekly_results_chart['Preciznost'].apply(lambda acc_str: float(acc_str[:-1]) / 10)
-
 		player_data = {
 			"first_name": first_name,
 			"last_name": last_name,
@@ -517,8 +514,7 @@ class Data:
 			"num_of_hard_point": num_of_hard_point,
 			'num_of_votes': num_of_votes,
 			'accuracy': accuracy,
-			'weekly_results': weekly_results,
-			'weekly_results_chart': weekly_results_chart
+			'weekly_results': weekly_results
 		}
 
 		self.tribes_data.set_index('Ime', inplace=True, drop=False)
@@ -531,7 +527,7 @@ class Data:
 		return player_data
 
 	def define_highest_num_of_games(self):
-		global highest_num_of_games, highest_num_of_weekly_games, highest_num_of_votes, max_weeks
+		global highest_num_of_games, highest_num_of_votes, max_weeks
 
 		# finding highest number of games played by one of players and setting it as a highest_num_of_games
 		red_most_games_player_count = self.games_data["Crveni"].value_counts().max()
@@ -546,16 +542,6 @@ class Data:
 
 		# finding max number of weeks
 		max_weeks = self.games_data['Nedelja'].max()
-
-		for week in range(1, max_weeks + 1):
-			weekly_games = self.games_data[self.games_data['Nedelja'] == week]
-			red_week = weekly_games['Crveni'].value_counts().max()
-			blue_week = weekly_games['Plavi'].value_counts().max()
-			if red_week >= blue_week:
-				highest_num_games_for_current_week = red_week
-			else:
-				highest_num_games_for_current_week = blue_week
-			highest_num_of_weekly_games.append(highest_num_games_for_current_week)
 
 	def get_tribes_statistics(self):
 		df = self.games_data.copy()
@@ -595,6 +581,7 @@ class Data:
 		weekly_speed_red_t = weekly_speed_red.T
 		weekly_speed_red_t.columns = weekly_speed_red_t.iloc[0]
 		weekly_speed_red_t = weekly_speed_red_t.drop(index=['Crveni'])
+		weekly_speed_red_t['Varja'] = 0
 
 		weekly_speed_blue = df[df['Poligon'] == 2.0].groupby(['Nedelja', 'Plavi'])['Poligon'].count().reset_index()
 		weekly_speed_blue.sort_values(by='Plavi')
