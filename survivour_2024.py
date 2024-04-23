@@ -190,7 +190,8 @@ class TribeCard:
 			height=280,
 			margin=dict(l=50, r=50, b=10, t=30, pad=4),
 			legend={'traceorder': 'normal'},
-			hoverlabel=dict(bgcolor='#262730'))
+			hoverlabel=dict(bgcolor='#262730'),
+			dragmode=False)
 
 		# chart 2 (wins)
 		hex_colors = {
@@ -214,7 +215,8 @@ class TribeCard:
 			height=270,
 			margin=dict(l=50, r=50, b=10, t=15, pad=4),
 			template='plotly_dark',
-			hoverlabel=dict(bgcolor='#262730'))
+			hoverlabel=dict(bgcolor='#262730'),
+			dragmode=False)
 
 		# chart 3 (speed)
 		speed = tribe_stat['weekly_speed']
@@ -239,7 +241,8 @@ class TribeCard:
 			margin=dict(l=0, r=0, b=0, t=15, pad=4),
 			legend_title="Nedelja",
 			template='plotly_dark',
-			hoverlabel=dict(bgcolor='#262730'))
+			hoverlabel=dict(bgcolor='#262730'),
+			dragmode=False)
 
 		# chart 4 (accuracy)
 		bar_plot_data = tribe[['Ime', 'Preciznost']].sort_values(by='Preciznost', ascending=False)
@@ -258,7 +261,8 @@ class TribeCard:
 			width=600,
 			height=280,
 			margin=dict(l=50, r=50, b=0, t=15, pad=4),
-			hoverlabel=dict(bgcolor='#262730'))
+			hoverlabel=dict(bgcolor='#262730'),
+			dragmode=False)
 
 		for tab in tab1, tab2, tab3, tab4:
 			with tab:
@@ -391,7 +395,8 @@ class PlayerCard:
 					visible=True,
 					range=[0, 10])),
 			showlegend=False,
-			hoverlabel=dict(bgcolor='#262730'))
+			hoverlabel=dict(bgcolor='#262730'),
+			dragmode=False)
 
 		# fig1.for_each_trace(lambda t: t.update(hoveron='points'))
 		col8.plotly_chart(fig1, config={'displayModeBar': False})
@@ -427,7 +432,8 @@ class PlayerCard:
 			template='plotly_dark',
 			xaxis=dict(title_text="Nedelje", tickmode='array', tickvals=weeks, range=[0.5, max(weeks) + 0.5]),
 			yaxis=dict(range=[0, 10]),
-			hoverlabel=dict(bgcolor='#262730'))
+			hoverlabel=dict(bgcolor='#262730'),
+			dragmode=False)
 
 		col9.plotly_chart(fig2, config={'displayModeBar': False})
 		self.parent.markdown("""---""")
