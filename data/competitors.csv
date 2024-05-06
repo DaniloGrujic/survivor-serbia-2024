@@ -3,7 +3,7 @@ Status,Ime,Prezime,Godine,Grad,Profesija,Pleme
 🔥,Vojislav,Vrećo,30,Beograd,HR Konsultant,Crveno
 🔥,Katarina,Nikolić,27,Novi Sad,Magistar ekonomije i marketinga,Crveno
  ,Uroš,Velanac,26,Beograd,Košarkaš,Crveno
-🔥,Vesna,Jovanović,40,Novi Sad,Psihološkinja,Crveno
+ ,Vesna,Jovanović,40,Novi Sad,Psihološkinja,Crveno
 🔥,Mitar,Pešić,42,Beograd,Preduzetnik,Crveno
  ,Varja,Topalović,26,Beograd,Pevačica,Crveno
  ,Marko,Kovačević,20,Beograd,Barmen,Crveno
@@ -13,7 +13,7 @@ Status,Ime,Prezime,Godine,Grad,Profesija,Pleme
 🔥,Anđela,Šarčević,26,Podgorica,Ekonomista,Crveno
 🔥,Matea,Galić,25,Šibenik,Farmaceutski tehničar,Plavo
  ,Meggy,Alobić,34,Bregi,Fizioterapeutkinja,Plavo
-🔥,Martina,Fudurić,33,Zagreb,Profesorka fizičkog vaspitanja,Plavo
+ ,Martina,Fudurić,33,Zagreb,Profesorka fizičkog vaspitanja,Plavo
  ,Jakob,Kosić,30,Zagreb,MMA borac,Plavo
  ,Nikola,Renić,21,Zagreb,Student sociologije,Plavo
  ,Katia,Žunić,22,Rijeka,Fizioterapeutkinja,Plavo
